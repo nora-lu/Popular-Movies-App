@@ -1,5 +1,6 @@
 package com.android.qian.popularmovies;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
 
 import org.json.JSONArray;
@@ -34,7 +36,7 @@ import java.util.List;
  */
 public class MovieFragment extends Fragment {
     private static final String LOG_TAG = MovieFragment.class.getSimpleName();
-
+    private static final String INTENT_EXTRA_MOVIE_DETAIL = "detail";
     private MovieAdapter mMovieAdapter;
 
     public MovieFragment() {
@@ -48,6 +50,15 @@ public class MovieFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         GridView gridView = (GridView)rootView.findViewById(R.id.movies_grid);
         gridView.setAdapter(mMovieAdapter);
+
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(getActivity(), DetailActivity.class)
+                        .putExtra(INTENT_EXTRA_MOVIE_DETAIL, mMovieAdapter.getItem(position));
+                startActivity(intent);
+            }
+        });
 
         return rootView;
     }
@@ -155,7 +166,7 @@ public class MovieFragment extends Fragment {
         }
 
         private List<Movie> getMoviesDataFromJson(String moviesJsonStr)
-            throws JSONException {
+                throws JSONException {
 
             final String KEY_RESULTS = "results";
             final String KEY_ID = "id";
@@ -194,13 +205,13 @@ public class MovieFragment extends Fragment {
                 }
 
                 Movie movie = new Movie.MovieBuilder()
-                                        .id(id)
-                                        .title(title)
-                                        .overview(overview)
-                                        .imagePath(imagePath)
-                                        .ratings(ratings)
-                                        .releaseDate(releaseDate)
-                                        .buildMovie();
+                        .id(id)
+                        .title(title)
+                        .overview(overview)
+                        .imagePath(imagePath)
+                        .ratings(ratings)
+                        .releaseDate(releaseDate)
+                        .buildMovie();
                 movies.add(movie);
             }
             return movies;

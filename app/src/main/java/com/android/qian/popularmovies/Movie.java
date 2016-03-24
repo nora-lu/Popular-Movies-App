@@ -1,11 +1,14 @@
 package com.android.qian.popularmovies;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Date;
 
 /**
  * Created by Qian on 3/19/2016.
  */
-public class Movie {
+public class Movie implements Parcelable{
     private int id;
     private String title;
     private String imagePath;  // the relative path to a movie poster image
@@ -22,6 +25,42 @@ public class Movie {
         this.ratings = ratings;
         this.releaseDate = releaseDate;
     }
+
+    public Movie(Parcel in) {
+        id = in.readInt();
+        title = in.readString();
+        imagePath = in.readString();
+        overview = in.readString();
+        ratings = in.readDouble();
+        releaseDate = new Date(in.readLong());
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(title);
+        dest.writeString(imagePath);
+        dest.writeString(overview);
+        dest.writeDouble(ratings);
+        dest.writeLong(releaseDate.getTime());
+    }
+
+    public static final Parcelable.Creator<Movie> CREATOR = new Parcelable.Creator<Movie>() {
+        @Override
+        public Movie createFromParcel(Parcel source) {
+            return new Movie(source);
+        }
+
+        @Override
+        public Movie[] newArray(int i) {
+            return new Movie[i];
+        }
+    };
 
     public int getId() {
         return id;
