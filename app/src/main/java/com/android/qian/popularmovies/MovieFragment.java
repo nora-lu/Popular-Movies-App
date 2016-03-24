@@ -1,7 +1,9 @@
 package com.android.qian.popularmovies;
 
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,6 +33,8 @@ import java.util.List;
  * A placeholder fragment containing a simple view.
  */
 public class MovieFragment extends Fragment {
+    private static final String LOG_TAG = MovieFragment.class.getSimpleName();
+
     private MovieAdapter mMovieAdapter;
 
     public MovieFragment() {
@@ -56,7 +60,12 @@ public class MovieFragment extends Fragment {
 
     private void updateMovies() {
         FetchMovieTask movieTask = new FetchMovieTask();
-        movieTask.execute("top_rated");
+        SharedPreferences sharedPref
+                = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String sortBy = sharedPref.getString(getString(R.string.pref_sort_key),
+                getString(R.string.pref_sort_by_popular));
+        Log.e(LOG_TAG, "Sort by: " + sortBy);
+        movieTask.execute(sortBy);
     }
 
     public class FetchMovieTask extends AsyncTask<String, Void, List<Movie>> {
